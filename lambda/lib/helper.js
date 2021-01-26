@@ -1,3 +1,9 @@
+
+const map = {
+    "luis":"luis@moneyclip.io",
+    "brendan":"brendan@moneyclip.io",
+}
+
 /**
  * Assembles query parameters.
  * 
@@ -38,16 +44,22 @@ module.exports.assembleRequest = function (path, query) {
  *                             See: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-output-format
  */
 module.exports.assembleResponse = function (requestUri) {
-    var location;
+    let cookie = "referrer-email=";
+    let location;
     if (process.env.NEW_DOMAIN.includes("?") || ! process.env.NEW_DOMAIN.endsWith("/")) {
         location = process.env.NEW_DOMAIN;
     } else {
         location = process.env.NEW_DOMAIN + requestUri;
     }
+    if(requestUri.length){
+        const email = map[requestUri.substr(1)]
+        cookie += email;
+    }
     return {
         statusCode: process.env.HTTP_RESPONSE,
         headers: {
-            "Location": location
+            "Location": location,
+            "Set-Cookie": cookie + "; domain=moneyclip.io",
         },
         body: null
     }
