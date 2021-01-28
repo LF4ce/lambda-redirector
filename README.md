@@ -59,6 +59,16 @@ aws cloudformation package \
     --s3-bucket MyRedirectorBucket
 ```
 
+MC Redirect upload command 
+```
+ aws cloudformation package \                                                                                                 
+    --template-file app_spec.yml \
+    --output-template-file packaged.yml \
+    --s3-bucket redirect-moneyclip.io
+
+```
+
+
 ## Deploy
 Deploys the CloudFormation template by creating and executing a changeset.
 ```
@@ -69,6 +79,19 @@ aws cloudformation deploy \
     --parameter-overrides \
         NewDomain=http://example.org \
         HTTPResponse=301
+```
+
+MC Deploy command
+
+```
+aws cloudformation deploy \                                                                                                  
+    --template-file packaged.yml \
+    --stack-name Redirector \ 
+    --capabilities CAPABILITY_IAM \
+    --parameter-overrides \
+        NewDomain=https://moneyclip.io \
+        HTTPResponse=302
+
 ```
 
 *Note*: Ensure that NewDomain is prefixed with either `http://` or `https://` or you will get a chain of redirects to a never-ending path on the source domain. It will be amusing but will not meet your goal.
